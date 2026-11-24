@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda PWA · Actividades y recordatorios</title>
+  <meta name="description" content="Administra tus actividades y recordatorios personales, incluso sin conexión. PWA con IndexedDB, notificaciones y sincronización.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al contenido</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="/icons/icon-192.png" alt="" width="36" height="36">
+      <h1>Agenda PWA</h1>
+    </div>
+    <div class="status">
+      <span id="net-status" class="badge online" role="status" aria-live="polite">En línea</span>
+      <span id="sync-status" class="badge neutral" role="status" aria-live="polite">Sincronizado</span>
+      <button id="install-btn" class="btn small ghost" hidden>Instalar app</button>
+    </div>
+  </header>
+
+  <main id="main" class="layout">
+    <section class="card" aria-labelledby="form-title">
+      <h2 id="form-title">Nueva actividad</h2>
+      <form id="activity-form" autocomplete="off">
+        <input type="hidden" id="activity-id">
+        <div class="field">
+          <label for="title">Título *</label>
+          <input id="title" name="title" required maxlength="80" placeholder="Ej. Entregar ADA 4">
+        </div>
+        <div class="field">
+          <label for="description">Descripción</label>
+          <textarea id="description" name="description" rows="3" maxlength="400" placeholder="Detalles de la actividad"></textarea>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="dueAt">Fecha y hora *</label>
+            <input id="dueAt" name="dueAt" type="datetime-local" required>
+          </div>
+          <div class="field">
+            <label for="reminder">Recordatorio</label>
+            <select id="reminder" name="reminder">
+              <option value="-1">Sin recordatorio</option>
+              <option value="0">A la hora de la actividad</option>
+              <option value="5">5 minutos antes</option>
+              <option value="15" selected>15 minutos antes</option>
+              <option value="60">1 hora antes</option>
+              <option value="1440">1 día antes</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="category">Categoría</label>
+            <select id="category" name="category">
+              <option>Escuela</option>
+              <option>Trabajo</option>
+              <option>Personal</option>
+              <option>Salud</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="priority">Prioridad</label>
+            <select id="priority" name="priority">
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="save-btn">Guardar actividad</button>
+          <button type="button" class="btn ghost" id="cancel-btn" hidden>Cancelar edición</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="notif-title">
+      <h2 id="notif-title">Notificaciones y sincronización</h2>
+      <p class="muted">Permiso de notificaciones: <strong id="perm-status">—</strong> · Push: <strong id="push-status">—</strong></p>
+      <div class="btn-grid">
+        <button class="btn" id="perm-btn">Activar notificaciones</button>
+        <button class="btn" id="local-notif-btn">Probar notificación local</button>
+        <button class="btn" id="push-sub-btn">Suscribirse a Push</button>
+        <button class="btn" id="push-test-btn">Enviar Push de prueba</button>
+        <button class="btn" id="sync-btn">Sincronizar ahora</button>
+      </div>
+      <p class="muted small" id="last-sync">Última sincronización: nunca</p>
+    </section>
+    <section class="card list-card" aria-labelledby="list-title">
+      <div class="list-head">
+        <h2 id="list-title">Mis actividades</h2>
+        <span id="counter" class="muted"></span>
+      </div>
+      <div class="toolbar">
+        <label class="sr-only" for="search">Buscar actividades</label>
+        <input id="search" type="search" placeholder="Buscar…">
+        <div class="segmented" role="group" aria-label="Filtrar actividades">
+          <button class="seg active" data-filter="all" aria-pressed="true">Todas</button>
+          <button class="seg" data-filter="pending" aria-pressed="false">Pendientes</button>
+          <button class="seg" data-filter="done" aria-pressed="false">Completadas</button>
+        </div>
+      </div>
+      <ul id="activity-list" class="activity-list" aria-live="polite"></ul>
+      <p id="empty" class="empty" hidden>No hay actividades. ¡Registra la primera!</p>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" role="alert" hidden></div>
+
+  <footer class="footer">
+    <p>Agenda PWA · Funciona sin conexión gracias a Service Workers e IndexedDB.</p>
+  </footer>
+
+  <script src="/js/db.js" defer></script>
+  <script src="/js/app.js" defer></script>
+</body>
+</html>
